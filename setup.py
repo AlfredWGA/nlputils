@@ -12,7 +12,7 @@ setuptools.setup(
     description="A package containing utilities for Natural Language Processing.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/AlfredWGA/NLP-Utils",
+    url="https://github.com/AlfredWGA/nlputils",
     keywords='NLP, Natural Language Processing',
     packages=setuptools.find_packages(),   # Find packages from current directory.
     # If packages are placed in a distint folder such as `src`, 
