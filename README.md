@@ -4,11 +4,14 @@ This is a Python package that implements tools for Natural Language Processing (
 
 ## Install
 
+```shell
     git clone https://github.com/AlfredWGA/nlputils.git
     cd nlputils
     pip install .
+```
 
 ## Requirements
+
 * jieba
 * nltk
 * jieba

@@ -1,13 +1,14 @@
 # coding=utf-8
 import jieba
-import nltk
 from tqdm import tqdm
+import spacy
 import pickle
 import numpy as np
 import collections
 from collections.abc import Iterable
-from itertools import chain
 import logging
+from pathlib import Path
+from . import STOPWORDS_PATH_DICT
 logger = logging.getLogger(__name__)
 
 
@@ -228,14 +229,34 @@ class Tokenizer(object):
 class BasicTokenizer(Tokenizer):
     """
     A basic tokenizer. Support word segmentation and loading stop words.
+    By default, Chinese stopwords are provided. English, stopwords are loaded from `nltk`.
 
-    Supporting languages: Chinese, English   
+
+    Supported languages: `cn`, `en`   
     """
 
-    def __init__(self, language='cn', **kwargs):
+    def __init__(self, language='cn', lemma=False, **kwargs):
+        """
+        `lemma` only supported for `en`.
+        """
+        self._SUPPORTED_LANGUAGE = {'cn', 'en'}
+        if language not in self._SUPPORTED_LANGUAGE:
+            raise ValueError(f'Language {language} not supported.')
+
+        if language == 'en':
+            self.lemma = lemma
+            self.model = spacy.load('en_core_web_sm')
+
+        self._stop_words = self._init_stop_words(language)
         self._language = language
-        self._stop_words = set()
         super(BasicTokenizer, self).__init__(**kwargs)
+    
+    def _init_stop_words(self, language):
+        fpath = Path(__file__).parent / STOPWORDS_PATH_DICT[language]
+        with open(fpath, 'r', encoding='utf-8') as f:
+            stop_words = set([line.strip() for line in f])  
+        logger.info('Load stopwords from {}'.format(fpath))    
+        return stop_words
 
     def _convert_token_to_id(self, token):
         return self._token2id[token]
@@ -281,7 +302,10 @@ class BasicTokenizer(Tokenizer):
             tokens = list(jieba.cut(string))
 
         elif self._language == 'en':
-            tokens = nltk.tokenize.word_tokenize(string, 'english')
+            if self.lemma is True:
+                tokens = [t.lemma_ for t in self.model(string)]
+            else:
+                tokens = [t.text for t in self.model(string)]
 
         if no_stop_words:
             tokens = self.discard_stop_words(tokens)
@@ -335,28 +359,17 @@ class BasicTokenizer(Tokenizer):
         self._ids = set(self._ids)
         return self.get_vocab()
 
-    def load_stopwords(self, stop_words_path=None):
+    def load_stopwords(self, stopwords_path):
         """
-        Load stop words into the tokenizer.
-
-        For Chinese, stop words are loaded from `stop_words_path`.
-        For English, stop words are provided by `nltk`.
-
-        :param stop_words_path: File path to load from. Each line containing one stop word.
-        :return: A set of stop words.
+        Load custom stopwords into the tokenizer. Only UTF-8 encoding files.
+        :param stop_words_path: File to load from, with one stopword each line.
         """
-        if self._language == 'cn':
-            if stop_words_path is not None:
-                with open(stop_words_path, mode='r', encoding='utf-8') as f:
-                    self._stop_words = set(x.strip() for x in f.readlines())
-            logger.info('Load stop words from {}.'.format(stop_words_path))
-
-        elif self._language == 'en':
-            self._stop_words = set(
-                word for word in nltk.corpus.stopwords.words('english'))
-
-        self._stop_words.update(['', ' ', '\n', '\t', '\r'])
-        return self._stop_words
+        with open(stopwords_path, mode='r', encoding='utf-8') as f:
+            self._stop_words = set([x.strip() for x in f])
+        logger.info('Load stopwords from {}.'.format(stopwords_path))
 
     def get_stopwords(self):
-        return self._stop_words
+        """
+        Return a list of stopwords.
+        """
+        return list(self._stop_words)
