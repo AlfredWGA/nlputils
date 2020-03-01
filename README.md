@@ -10,15 +10,6 @@ This is a Python package that implements tools for Natural Language Processing (
     pip install .
 ```
 
-## Requirements
-
-* jieba
-* nltk
-* jieba
-* tqdm
-* torch
-* tensorflow
-
 ## Modules
 
 * `nlputils.tokenizer`  
