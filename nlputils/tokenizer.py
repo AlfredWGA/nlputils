@@ -113,8 +113,9 @@ class Tokenizer(object):
         self._mask_token = DEFAULT_SPECIAL_TOKENS["mask_token"]
         self._additional_special_tokens = []
 
-        self._vocab = set()
-        self._ids = set()
+        # TODO: Change vocab and ids to list.
+        self._vocab = []
+        self._ids = []
         self._token2id = {}
         self._id2token = {}
 
@@ -355,8 +356,8 @@ class BasicTokenizer(Tokenizer):
         self._id2token = {value: key for key, value in self._token2id.items()}
 
         # Cast vocab and ids to set().
-        self._vocab = set(self._vocab)
-        self._ids = set(self._ids)
+        # self._vocab = set(self._vocab)
+        # self._ids = set(self._ids)
         return self.get_vocab()
 
     def load_stopwords(self, stopwords_path):
