@@ -113,7 +113,6 @@ class Tokenizer(object):
         self._mask_token = DEFAULT_SPECIAL_TOKENS["mask_token"]
         self._additional_special_tokens = []
 
-        # TODO: Change vocab and ids to list.
         self._vocab = []
         self._ids = []
         self._token2id = {}
@@ -247,6 +246,9 @@ class BasicTokenizer(Tokenizer):
         if language == 'en':
             self.lemma = lemma
             self.model = spacy.load('en_core_web_sm')
+            # Merge name entities.
+            merge_ents = self.model.create_pipe("merge_entities")
+            self.model.add_pipe(merge_ents)
 
         self._stop_words = self._init_stop_words(language)
         self._language = language
