@@ -14,7 +14,7 @@ class VocabGenerator(object):
         self._token2tf = {}
         self._vocab = list(DEFAULT_SPECIAL_TOKENS.values())
 
-    def generate_vocab(self, corpus, min_count=0):
+    def generate_vocab(self, corpus):
         """
         Generate vocabulary from `corpus`. `corpus` is a list of word lists,
         that contains all the samples from the dataset.
