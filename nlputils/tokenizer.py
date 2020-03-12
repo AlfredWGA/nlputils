@@ -235,9 +235,9 @@ class BasicTokenizer(Tokenizer):
     Supported languages: `cn`, `en`   
     """
 
-    def __init__(self, language='cn', lemma=False, **kwargs):
+    def __init__(self, language='cn', lemma=False, merge_ne=False, **kwargs):
         """
-        `lemma` only supported for `en`.
+        `lemma` and 'merge_ne' only valid for `en`.
         """
         self._SUPPORTED_LANGUAGE = {'cn', 'en'}
         if language not in self._SUPPORTED_LANGUAGE:
@@ -246,9 +246,10 @@ class BasicTokenizer(Tokenizer):
         if language == 'en':
             self.lemma = lemma
             self.model = spacy.load('en_core_web_sm')
-            # Merge name entities.
-            merge_ents = self.model.create_pipe("merge_entities")
-            self.model.add_pipe(merge_ents)
+            if merge_ne:
+                # Merge name entities.
+                merge_ents = self.model.create_pipe("merge_entities")
+                self.model.add_pipe(merge_ents)
 
         self._stop_words = self._init_stop_words(language)
         self._language = language
