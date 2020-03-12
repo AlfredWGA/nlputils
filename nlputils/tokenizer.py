@@ -235,7 +235,7 @@ class BasicTokenizer(Tokenizer):
     Supported languages: `cn`, `en`   
     """
 
-    def __init__(self, language='cn', lemma=False, merge_ne=False, **kwargs):
+    def __init__(self, language='cn', norm=False, merge_ne=False, **kwargs):
         """
         `lemma` and 'merge_ne' only valid for `en`.
         """
@@ -244,7 +244,7 @@ class BasicTokenizer(Tokenizer):
             raise ValueError(f'Language {language} not supported.')
 
         if language == 'en':
-            self.lemma = lemma
+            self.norm = norm
             self.model = spacy.load('en_core_web_sm')
             if merge_ne:
                 # Merge name entities.
@@ -306,8 +306,8 @@ class BasicTokenizer(Tokenizer):
             tokens = list(jieba.cut(string))
 
         elif self._language == 'en':
-            if self.lemma is True:
-                tokens = [t.lemma_ for t in self.model(string)]
+            if self.norm is True:
+                tokens = [t.norm_ for t in self.model(string)]
             else:
                 tokens = [t.text for t in self.model(string)]
 
