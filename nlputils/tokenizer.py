@@ -6,6 +6,7 @@ import pickle
 import numpy as np
 import collections
 from collections.abc import Iterable
+from collections import OrderedDict
 import logging
 from pathlib import Path
 from . import STOPWORDS_PATH_DICT
@@ -13,15 +14,16 @@ logger = logging.getLogger(__name__)
 
 
 # Default values for common special tokens
-DEFAULT_SPECIAL_TOKENS = {
-    "bos_token": '[BOS]',
-    "eos_token": '[EOS]',
+DEFAULT_SPECIAL_TOKENS = OrderedDict()
+DEFAULT_SPECIAL_TOKENS.update({
+    "pad_token": '[PAD]',
     "unk_token": '[UNK]',
     "sep_token": '[SEP]',
-    "pad_token": '[PAD]',
     "cls_token": '[CLS]',
-    "mask_token": '[MASK]'
-}
+    "mask_token": '[MASK]',
+    "bos_token": '[BOS]',
+    "eos_token": '[EOS]',
+})
 
 
 def pad_sequence_to_fixed_length(sequence, max_length, value=0, padding_mode='right', truncate_mode='right'):
