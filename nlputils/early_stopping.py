@@ -19,20 +19,20 @@ class EarlyStopping(object):
         if self.counter >= self.patience:
             self.stop_flag = True
 
-    def step(self, score, model):
+    def step(self, score):
         # No initial best score.
         if self.best_score is None:
             self.best_score = score
         
         # Check if score is worse than best score, or is out of patience.
         elif self.mode == 'min':
-            if score < self.best_score:
+            if self.best_score <= score - self.min_delta:
                 self._update_counter()
         elif  self.mode == 'max':
-            if score > self.best_score:
+            if score + self.min_delta <= self.best_score:
                 self._update_counter()
 
-        # Achieve a higher best score.
+        # Achieve a better score.
         else:
             self.best_score = score
             self.counter = 0
