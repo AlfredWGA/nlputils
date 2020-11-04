@@ -28,6 +28,8 @@ class EarlyStopping(object):
         best_flag = False
         if self.best_score is None:
             self.best_score = score
+            logger.info('A initial score!')
+            best_flag = True
 
         # Check if score is worse than best score, or is out of patience.
         elif (self.mode == 'min' and self.best_score <= score) or \
